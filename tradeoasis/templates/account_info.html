@@ -1,0 +1,109 @@
+{% extends "base_layout.html" %}
+{% block title %}Informacije o računu{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h2 class="text-3xl font-bold text-green-400 mb-6">Informacije o računu</h2>
+    
+    <!-- Account Details Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Personal Information -->
+        <div class="bg-gray-700 p-5 rounded-lg">
+            <h3 class="text-xl font-semibold text-white mb-4 border-b border-gray-600 pb-2">Osobni podaci</h3>
+            
+            <div class="mb-4">
+                <p class="text-gray-400 text-sm">Korisničko ime</p>
+                <p class="text-white text-lg font-medium">{{ user.username }}</p>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-gray-400 text-sm">Email adresa</p>
+                <p class="text-white text-lg font-medium">{{ user.email }}</p>
+            </div>
+            
+            <div>
+                <p class="text-gray-400 text-sm">Član od</p>
+                <p class="text-white text-lg font-medium">{{ user.date_joined|date:"d.m.Y." }}</p>
+            </div>
+        </div>
+        
+        <!-- Financial Information -->
+        <div class="bg-gray-700 p-5 rounded-lg">
+            <h3 class="text-xl font-semibold text-white mb-4 border-b border-gray-600 pb-2">Financijski podaci</h3>
+            
+            <div class="mb-4">
+                <p class="text-gray-400 text-sm">Raspoloživa sredstva</p>
+                <p class="text-green-400 text-2xl font-bold">€{{ cash_balance|floatformat:2 }}</p>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-gray-400 text-sm">Ukupna vrijednost portfolia</p>
+                <p class="text-green-300 text-2xl font-bold">€{{ total_portfolio_value|floatformat:2 }}</p>
+            </div>
+            
+            <div>
+                <p class="text-gray-400 text-sm">Broj dionica u portfoliu</p>
+                <p class="text-white text-lg font-medium">{{ num_stocks }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Account Management -->
+    <div class="mt-8 pt-6 border-t border-gray-600">
+        <h3 class="text-xl font-semibold text-white mb-4">Upravljanje računom</h3>
+        
+        <!-- Delete Account -->
+        <div class="flex justify-between items-center p-4 bg-gray-700 rounded-lg">
+            <div>
+                <p class="text-white font-medium">Brisanje računa</p>
+                <p class="text-gray-400 text-sm">Ova radnja je trajna. Svi vaši podaci i portfolio bit će izbrisani.</p>
+            </div>
+            <button id="deleteAccountBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Izbriši račun
+            </button>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 class="text-xl font-bold text-white mb-4">Potvrda brisanja računa</h3>
+            <p class="text-gray-300 mb-6">Jeste li sigurni da želite izbrisati svoj račun? Ova radnja je trajna i ne može se poništiti.</p>
+            <div class="flex justify-between">
+                <button id="cancelDeleteBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Odustani
+                </button>
+                <form method="POST" action="{% url 'delete_account' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                        Potvrdi brisanje
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // JavaScript for modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteBtn = document.getElementById('deleteAccountBtn');
+            const modal = document.getElementById('deleteConfirmModal');
+            const cancelBtn = document.getElementById('cancelDeleteBtn');
+
+            deleteBtn.addEventListener('click', function() {
+                modal.classList.remove('hidden');
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                modal.classList.add('hidden');
+            });
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</div>
+{% endblock %}

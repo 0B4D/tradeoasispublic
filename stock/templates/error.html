@@ -1,0 +1,29 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}Error - TradeOasis{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-screen text-white">
+    <div class="bg-gray-900 p-8 rounded-lg shadow-lg max-w-2xl text-center">
+        <div class="flex flex-col items-center">
+            <svg class="w-20 h-20 text-red-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 18a6 6 0 110-12 6 6 0 010 12zm0 6a12 12 0 100-24 12 12 0 000 24z" />
+            </svg>
+            <h1 class="text-4xl font-bold text-red-500">Dogodila se greška.</h1>
+            <p class="p-3">Nismo mogli pronaći podatke za dionicu koju ste upisali.</p>
+        </div>
+
+        <div class="mt-6 flex flex-wrap justify-center gap-4">
+            <a href="javascript:history.back()" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold transition duration-300">
+                Povratak
+            </a>
+            <a href="/" class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold transition duration-300">
+                Nazad na početnu
+            </a>
+            <a href="/help" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold transition duration-300">
+                Pomoć
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

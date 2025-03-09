@@ -1,0 +1,61 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}Složena Kamata{% endblock %}
+
+{% block content %}
+<div class="mt-16 max-w-6xl mx-auto px-6">
+    <h2 class="text-3xl font-bold text-green-400 text-center mb-6">Što je složena kamata?</h2>
+    <p class="text-gray-300 leading-relaxed mb-4">
+        Složena kamata je moćan financijski koncept koji omogućuje rast vašeg kapitala eksponencijalno. 
+        Za razliku od jednostavne kamate, gdje se kamata obračunava samo na početni iznos, složena kamata 
+        se obračunava i na glavnicu i na prethodno stečenu kamatu.
+    </p>
+
+    <h3 class="text-2xl font-semibold text-green-300 mt-6 mb-4">Kako funkcionira složena kamata?</h3>
+    <p class="text-gray-300 leading-relaxed mb-4">
+        Formula za izračun složene kamate je:
+    </p>
+    <div class="bg-gray-800 p-4 rounded-lg text-center text-white font-mono text-lg">
+        A = P (1 + r/n)^(nt)
+    </div>
+    <p class="text-gray-300 leading-relaxed mt-4">
+        Gdje:
+        <ul class="list-disc list-inside text-gray-300">
+            <li><b>A</b> - konačni iznos nakon određenog vremena</li>
+            <li><b>P</b> - početna investicija (glavnica)</li>
+            <li><b>r</b> - godišnja kamatna stopa (u decimalnom obliku, npr. 5% = 0.05)</li>
+            <li><b>n</b> - broj kapitalizacija godišnje (mjesečno = 12, godišnje = 1, itd.)</li>
+            <li><b>t</b> - broj godina ulaganja</li>
+        </ul>
+    </p>
+
+    <h3 class="text-2xl font-semibold text-green-300 mt-6 mb-4">Primjer izračuna</h3>
+    <p class="text-gray-300 leading-relaxed mb-4">
+        Ako uložite <b>1000€</b> na račun s <b>5% godišnje kamate</b> koja se kapitalizira jednom godišnje 
+        i držite ulaganje <b>10 godina</b>, vaš kapital će rasti ovako:
+    </p>
+    <div class="bg-gray-800 p-4 rounded-lg text-center text-white font-mono text-lg">
+        A = 1000 (1 + 0.05/1)^(1 × 10) ≈ 1628.89€
+    </div>
+    <p class="text-gray-300 leading-relaxed mt-4">
+        Nakon 10 godina, vaš početni ulog od 1000€ narast će na <b>1628.89€</b>, i to bez dodatnih ulaganja!
+    </p>
+
+    <h3 class="text-2xl font-semibold text-green-300 mt-6 mb-4">Zašto je složena kamata važna?</h3>
+    <ul class="list-disc list-inside text-gray-300">
+        <li>📈 <b>Što ranije počnete, više ćete zaraditi!</b> Vrijeme je ključni faktor u rastu kapitala.</li>
+        <li>💰 <b>Idealan način za dugoročne investicije</b> poput mirovinskih fondova i štednje.</li>
+        <li>📊 <b>Primjenjuje se na razne vrste ulaganja</b> – štednju, dionice, obveznice i druge financijske proizvode.</li>
+    </ul>
+
+    <h3 class="text-2xl font-semibold text-green-300 mt-6 mb-4">Isprobajte sami!</h3>
+    <p class="text-gray-300 leading-relaxed mb-4">
+        Želite izračunati koliko biste zaradili pomoću složene kamate? Iskoristite naš kalkulator!
+    </p>
+    <div class="text-center mt-6">
+        <a href="/interest_calculator" class="bg-green-500 text-black font-semibold py-3 px-6 rounded-lg hover:bg-green-600">
+            Izračunaj složenu kamatu
+        </a>
+    </div>
+</div>
+{% endblock %}

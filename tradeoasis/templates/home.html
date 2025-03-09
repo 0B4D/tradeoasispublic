@@ -1,0 +1,178 @@
+{% extends 'base_layout.html' %}
+
+{% load static %}
+
+{% block title %}TradeOasis - Smarter Trading{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 text-white">
+  <!-- Hero Section -->
+  <div class="text-center py-20 px-6">
+      <img src="{% static 'logo.png' %}" alt="TradeOasis Logo" class="h-64 w-auto mx-auto">
+      <h1 class="text-5xl font-bold text-green-400  m-16">Vaš prvi korak prema pametnom investiranju.</h1>
+      {% if not user.is_authenticated %}
+      <div class="mt-6">
+          <a href="/accounts/register" class="bg-green-500 text-black font-semibold py-3 px-6 rounded-lg hover:bg-green-600">Registracija</a>
+          <a href="/accounts/login" class="bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-600 ml-4">Prijava</a>
+      </div>
+      {% endif %}
+  </div>
+
+  <!-- Market Overview -->
+  <div class="max-w-6xl mx-auto px-6">
+      <div class="overflow-hidden relative w-full">
+          <div class="scroller" data-speed="slow">
+            <ul class="tag-list scroller__inner">
+              {% for stock in sp500_data %}
+              <li>
+                <a href="/stock/{{ stock.ticker }}" class="hover:text-yellow-400">
+                  <div class="p-4 bg-gray-800 rounded-lg">
+                      <h3 class="text-xl font-semibold">{{ stock.ticker }}</h3>
+                      <p class="text-2xl {% if stock.change >= 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                          ${{ stock.price }} <span class="{% if stock.change >= 0 %}text-green-500{% else %}text-red-500{% endif %}">{{ stock.change }}%</span>
+                      </p>
+                  </div>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+      </div>
+      <div class="text-center mt-6">
+          <a href="/stock" class="text-green-400 hover:underline">Pretraži ostale dionice</a>
+      </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="mt-16 max-w-6xl mx-auto px-6">
+    <h2 class="text-3xl font-bold text-green-400 text-center mb-6">Zašto TradeOasis?</h2>
+    
+    <p class="text-gray-300 leading-relaxed mb-4 bg-gray-800 p-4 rounded-lg shadow-lg">
+        <span class="font-bold text-green-400">TradeOasis</span> je najbolji prvi korak prema sigurnom investiranju. 
+        Na platformi možete uložiti virtualni novac u dionice po vašoj želji te vremenom pratiti njihove performanse. 
+        Na taj način možete učiti o investicijama bez da sebe izlažete ikakvom riziku.
+    </p>
+
+    <p class="text-gray-300 leading-relaxed bg-gray-800 p-4 rounded-lg shadow-lg">
+        Uz to, nudimo vam <a href="/education" class="text-primary hover:underline"><span class="font-bold text-green-400">edukativne lekcije</span></a> koje će vas voditi kroz osnove 
+        investiranja i pomoći vam u ostvarivanju stabilnog i dugoročnog rasta uloženog kapitala.
+    </p>
+  </div>
+
+  <div class="mt-16 max-w-6xl mx-auto px-6">
+    <h2 class="text-3xl font-bold text-green-400 text-center mb-6">Godišnja kamata od 10%?</h2>
+    
+    <p class="text-gray-300 leading-relaxed mb-4 bg-gray-800 p-4 rounded-lg shadow-lg">
+        Da, dobro ste čuli. Postoji način da vaš kapital raste <span class="font-bold text-green-400">10% svake godine</span>, a da pritom ne morate raditi ništa.
+    </p>
+
+    <p class="text-gray-300 leading-relaxed bg-gray-800 p-4 rounded-lg shadow-lg">
+        Proučite o <a href="/education/compound-interest" class="text-primary hover:underline"><span class="font-bold text-green-400">složenoj kamati</span></a>
+        i ulaganju u <a href="/education/s&p500" class="text-primary hover:underline"><span class="font-bold text-green-400">S&P500</span></a> indeksnim fondovima.
+    </p>
+  </div>
+
+</div>
+
+<style>
+  .ticker-wrapper {
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      width: 100%;
+  }
+  .ticker-content {
+      display: flex;
+      gap: 16px;
+      animation: scroll 15s linear infinite;
+  }
+
+  .scroller {
+    max-width: 100%; /* Make the scroller take the full width */
+  }
+
+  .scroller__inner {
+    padding-block: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .scroller[data-animated="true"] {
+    overflow: hidden;
+    -webkit-mask: linear-gradient(
+      90deg,
+      transparent,
+      white 20%,
+      white 80%,
+      transparent
+    );
+    mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+  }
+
+  .scroller[data-animated="true"] .scroller__inner {
+    width: max-content;
+    flex-wrap: nowrap;
+    animation: scroll var(--_animation-duration, 40s)
+      var(--_animation-direction, forwards) linear infinite;
+  }
+
+  .scroller[data-direction="right"] {
+    --_animation-direction: reverse;
+  }
+
+  .scroller[data-direction="left"] {
+    --_animation-direction: forwards;
+  }
+
+  .scroller[data-speed="fast"] {
+    --_animation-duration: 20s;
+  }
+
+  .scroller[data-speed="slow"] {
+    --_animation-duration: 60s;
+  }
+
+  .scroller:hover .scroller__inner {
+    animation-play-state: paused; /* Pause the animation on hover */
+  }
+
+  @keyframes scroll {
+    to {
+      transform: translate(calc(-50% - 0.5rem));
+    }
+  }
+
+</style>
+
+<script>
+  const scrollers = document.querySelectorAll(".scroller");
+
+// If a user hasn't opted in for recuded motion, then we add the animation
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  addAnimation();
+}
+
+function addAnimation() {
+  scrollers.forEach((scroller) => {
+    // add data-animated="true" to every `.scroller` on the page
+    scroller.setAttribute("data-animated", true);
+
+    // Make an array from the elements within `.scroller-inner`
+    const scrollerInner = scroller.querySelector(".scroller__inner");
+    const scrollerContent = Array.from(scrollerInner.children);
+
+    // For each item in the array, clone it
+    // add aria-hidden to it
+    // add it into the `.scroller-inner`
+    scrollerContent.forEach((item) => {
+      const duplicatedItem = item.cloneNode(true);
+      duplicatedItem.setAttribute("aria-hidden", true);
+      scrollerInner.appendChild(duplicatedItem);
+    });
+  });
+}
+
+</script>
+
+{% endblock %}

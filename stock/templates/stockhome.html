@@ -1,0 +1,92 @@
+{% extends 'base_layout.html' %}
+{% block title %}Popularne Dionice - TradeOasis{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-6 py-10 bg-gray-900 text-white rounded-lg shadow-lg">
+  <h2 class="text-3xl font-bold text-green-400 text-center mb-6">📈 Popularne Dionice</h2>
+  
+  <!-- Display messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="{% if message.tags == 'error' %}bg-red-700{% else %}bg-green-700{% endif %} text-white p-4 mb-6 rounded-lg">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  <!-- Combined Search Form -->
+  <div class="mb-8 p-4 border border-green-500 rounded-lg bg-gray-800">
+    <h3 class="text-xl font-bold text-green-400 mb-3">Pretraži Dionice</h3>
+    <form method="GET" action="" class="flex items-center space-x-2">
+      <div class="flex-grow">
+        <input type="text" id="search" name="search" placeholder="Unesite oznaku dionice ili naziv tvrtke..." 
+          class="w-full p-3 text-lg border border-green-500 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+          value="{{ request.GET.search|default:'' }}" required>
+      </div>
+      <button type="submit" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold">
+        Pretraži
+      </button>
+      <button type="button" id="reset-search" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-red-400 hover:text-black transition">
+        Reset
+      </button>
+    </form>
+    <p class="text-sm text-gray-400 mt-2">Unesite oznaku dionice (npr. AAPL, MSFT) ili naziv tvrtke za detaljnu analizu.</p>
+  </div>
+
+  <!-- Stock Table -->
+  <div class="overflow-hidden rounded-lg shadow-lg">
+    <table class="w-full border border-green-500 text-white">
+      <thead>
+        <tr class="bg-green-700 text-lg">
+          <th class="p-4 text-left border-b border-green-500">Oznaka</th>
+          <th class="p-4 text-left border-b border-green-500">Ime Tvrtke</th>
+        </tr>
+      </thead>
+      <tbody id="stock-table">
+        {% for ticker, company_name in page_obj %}
+          <tr class="hover:bg-green-600 transition duration-200 cursor-pointer" data-href="/stock/{{ ticker }}">
+            <td class="p-4 border-b border-green-500">
+              <span class="text-green-400 hover:text-yellow-400 font-semibold">{{ ticker }}</span>
+            </td>
+            <td class="p-4 border-b border-green-500">{{ company_name }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="flex justify-center mt-6 space-x-2 flex-wrap">
+    {% if page_obj.has_previous %}
+      <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">Prva</a>
+      <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">←</a>
+    {% endif %}
+  
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+        <span class="px-4 py-2 bg-yellow-500 text-black font-bold rounded-lg">{{ num }}</span>
+      {% else %}
+        <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-green-700">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+  
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">→</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">Zadnja</a>
+    {% endif %}
+  </div>
+  
+</div>
+
+<!-- JavaScript -->
+<script>
+  document.getElementById('reset-search').addEventListener('click', function() {
+    window.location.href = window.location.pathname; // Reloads the page without search query
+  });
+
+  // Make entire row clickable
+  document.querySelectorAll('#stock-table tr').forEach(row => {
+    row.addEventListener('click', function() {
+      window.location.href = this.dataset.href;
+    });
+  });
+</script>
+
+{% endblock %}

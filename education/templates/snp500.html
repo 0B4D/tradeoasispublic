@@ -1,0 +1,50 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}Što je S&P 500?{% endblock %}
+
+{% block content %}
+<div class="mt-16 max-w-6xl mx-auto px-6">
+    <h2 class="text-3xl font-bold text-green-400 text-center mb-6">Što su S&P indeksni fondovi?</h2>
+    <p class="text-gray-300 leading-relaxed mb-4">
+        S&P indeksni fondovi su investicijski fondovi koji prate učinak S&P 500 indeksa. Umjesto ulaganja u pojedinačne dionice, investitori mogu kupiti udjele u fondu koji replicira sastav i performanse indeksa.
+    </p>
+
+    <h3 class="text-2xl font-semibold text-green-300 mt-6 mb-4">Kako funkcioniraju S&P indeksni fondovi?</h3>
+    <p class="text-gray-300 leading-relaxed mb-4">
+        Ovi fondovi ulažu u svih 500 kompanija unutar S&P 500 indeksa, osiguravajući diverzifikaciju i stabilan rast kapitala. Popularni oblici uključuju:
+    </p>
+    <ul class="list-disc list-inside text-gray-300">
+        <li><b>ETF-ovi (Exchange Traded Funds)</b> – trguju se na burzi poput dionica, s niskim troškovima.</li>
+        <li><b>Indeksni uzajamni fondovi</b> – namijenjeni dugoročnim ulagačima, često koriste automatsko reinvestiranje dividendi.</li>
+    </ul>
+
+    <h3 class="text-2xl font-semibold text-green-300 mt-6 mb-4">Povijesni prinos indeksnih fondova</h3>
+    <p class="text-gray-300 leading-relaxed mb-4">
+        Povijesni godišnji prinos S&P 500 indeksnih fondova iznosi oko <b>10%</b>, što znači da dugoročno ulaganje može značajno povećati kapital.
+    </p>
+    <div class="bg-gray-800 p-4 rounded-lg text-center text-white font-mono text-lg">
+        Ako biste uložili 1000€ u S&P indeksni fond i ostavili ga 30 godina uz prosječni godišnji prinos od 10%:
+    </div>
+    <p class="text-gray-300 leading-relaxed mt-4">
+        <b>Vaš kapital bi narastao na preko 17,000€!</b> To pokazuje snagu dugoročnog ulaganja i složene kamate.
+    </p>
+
+    <h3 class="text-2xl font-semibold text-green-300 mt-6 mb-4">Zašto ulagati u S&P indeksne fondove?</h3>
+    <ul class="list-disc list-inside text-gray-300">
+        <li>📈 <b>Dugoročni rast</b> – fondovi prate uspješnost najvećih kompanija u SAD-u.</li>
+        <li>💰 <b>Niski troškovi</b> – pasivno upravljani fondovi imaju manje naknade od aktivnih fondova.</li>
+        <li>📊 <b>Diverzifikacija</b> – ulaganje u 500 kompanija smanjuje rizik.</li>
+    </ul>
+
+    <h3 class="text-2xl font-semibold text-green-300 mt-6 mb-4">Počnite ulagati danas!</h3>
+    <p class="text-gray-300 leading-relaxed mb-4">
+        Želite saznati koliko biste mogli zaraditi dugoročnim ulaganjem u S&P indeksni fond? Isprobajte naš kalkulator rasta investicija!
+    </p>
+    <div class="text-center mt-6">
+        <a href="/interest_calculator" class="bg-green-500 text-black font-semibold py-3 px-6 rounded-lg hover:bg-green-600">
+            Izračunaj potencijalni prinos
+        </a>
+    </div>
+</div>
+
+{% endblock %}

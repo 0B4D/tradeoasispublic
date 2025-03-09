@@ -1,0 +1,33 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}{{ lesson.title }}{% endblock %}
+
+{% block content %}
+    <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-8">
+        <h1 class="text-5xl font-bold text-primary mb-6 text-center">{{ lesson.title }}</h1>
+
+        {% if lesson.thumbnail %}
+          <div class="p-6 rounded-lg">
+            <img src="{{ lesson.thumbnail.url }}" alt="{{ lesson.title }}" class="w-full h-[500px] object-contain rounded-lg mb-8">
+          </div>
+        {% else %}
+            <p class="text-gray-500 italic text-center mb-4">Slika nije dostupna</p>
+        {% endif %}
+
+        <p class="text-gray-800 text-lg leading-relaxed mb-8">{{ lesson.body }}</p>
+
+        <p class="text-gray-500 text-sm text-right">📝 Napisano: {{ lesson.created_at }}</p>
+
+        <!-- Delete Lesson Button for Superusers -->
+        {% if user.is_superuser %}
+        <div class="mt-6 text-right">
+            <form method="POST" action="{% url 'education:delete_lesson' lesson.slug%}">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                    Izbriši
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

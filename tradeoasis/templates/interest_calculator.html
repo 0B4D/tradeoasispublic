@@ -1,0 +1,111 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}Kamatni Kalkulator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <p class="text-gray-300 leading-relaxed mb-4 bg-gray-800 p-4 rounded-lg shadow-lg">
+        Pogledajte lekciju o <a href="/education/compound-interest" class="text-primary hover:underline"><span class="font-bold text-green-400">složenom ukamaćivanju</span></a>.
+    </p>
+    <div class="bg-white shadow-lg rounded-lg p-8">
+        <h2 class="text-2xl font-bold text-primary mb-4 text-center">Kamatni kalkulator</h2>
+
+        <!-- Form for user input -->
+        <form id="interest-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-gray-700">Početni Ulog (€)</label>
+                <input type="text" id="initial" class="w-full p-2 border rounded text-lg text-center text-gray-900" placeholder="1000">
+            </div>
+            <div>
+                <label class="block text-gray-700">Godišnja kamatna stopa (%)</label>
+                <input type="text" id="rate" class="w-full p-2 border rounded text-lg text-center text-gray-900" placeholder="10">
+            </div>
+            <div>
+                <label class="block text-gray-700">Mjesečni doprinos (€)</label>
+                <input type="text" id="monthly" class="w-full p-2 border rounded text-lg text-center text-gray-900" placeholder="100">
+            </div>
+            <div class="col-span-1 md:col-span-3 flex justify-center mt-4">
+                <button type="button" onclick="calculateGrowth()" class="bg-primary text-white py-2 px-6 rounded-lg hover:bg-secondary transition">
+                    Izračunaj
+                </button>
+            </div>
+        </form>
+
+        <!-- Result Display -->
+        <div id="result" class="text-center mt-6 text-lg font-semibold text-gray-800"></div>
+
+        <!-- Chart for visualization -->
+        <canvas id="growthChart" class="mt-6"></canvas>
+    </div>
+</div>
+
+<!-- Chart.js & Calculation Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function getParsedValue(id) {
+        let inputElement = document.getElementById(id);
+        let parsedValue = parseFloat(inputElement.value.replace(",", "."));
+        return isNaN(parsedValue) ? parseFloat(inputElement.placeholder) : parsedValue;
+    }
+    
+    function calculateGrowth() {
+        // Use placeholders as default values if input is empty
+        let initial = getParsedValue("initial");
+        let rate = getParsedValue("rate") / 100;
+        let monthly = getParsedValue("monthly");
+        let years = 30;
+
+        let labels = [];
+        let investmentData = [];
+        let contributionData = [];
+        let balance = initial;
+        let contributionTotal = initial;
+
+        for (let i = 0; i <= years; i++) {
+            labels.push(`${i}. godina`);
+            investmentData.push(balance.toFixed(2));
+            contributionData.push(contributionTotal.toFixed(2));
+
+            contributionTotal += monthly * 12;
+            balance += monthly * 12;
+            balance *= (1 + rate);
+        }
+
+        document.getElementById("result").innerHTML = `Vrijednost nakon ${years} godina: €${investmentData[years]}`;
+
+        // Update Chart
+        let ctx = document.getElementById("growthChart").getContext("2d");
+        if (window.myChart) window.myChart.destroy();
+        window.myChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Ukupna vrijednost (€)",
+                        data: investmentData,
+                        borderColor: "#16A34A",
+                        backgroundColor: "rgba(22, 163, 74, 0.2)",
+                        fill: true
+                    },
+                    {
+                        label: "Vrijednost doprinosa (€)",
+                        data: contributionData,
+                        borderColor: "#DC2626", // Red
+                        backgroundColor: "rgba(220, 38, 38, 0.2)",
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: false }
+                },
+                animation: false,
+            }
+        });
+    }
+</script>
+
+{% endblock %}

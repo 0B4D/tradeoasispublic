@@ -1,0 +1,86 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}TradeOasis edukativni sadržaj{% endblock %}
+
+{% block content %}
+  <div class="container mx-auto px-4 py-12">
+    <h1 class="text-4xl font-bold text-center text-primary mb-8">Lekcije o investiranju</h1>
+
+    <!-- Top Picks Section -->
+    <h2 class="text-2xl font-semibold text-center text-green-700 mb-6">📌 Preporučamo</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <div class="bg-white rounded-xl shadow-md overflow-hidden transition-transform transform hover:scale-105">
+        <div>
+          <a href="{% url 'education:lesson_detail' 'compound-interest' %}">
+            <img src="/media/compound_interest.png" alt="Složena kamata" class="w-full h-48 object-contain">
+          </a>
+        </div>
+        <div class="p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-2">
+            <a href="{% url 'education:lesson_detail' 'compound-interest' %}" class="hover:text-secondary">📈 Složena Kamata</a>
+          </h2>
+          <p class="text-gray-700 mt-2">Saznajte kako složena kamata može eksponencijalno povećati vaše bogatstvo.</p>
+          <a href="{% url 'education:lesson_detail' 'compound-interest' %}" class="inline-block mt-4 text-primary font-medium hover:underline">Pročitaj više →</a>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md overflow-hidden transition-transform transform hover:scale-105">
+        <div>
+          <a href="{% url 'education:lesson_detail' 'snp500' %}">
+            <img src="/media/stocks.jpg" alt="Diversifikacija" class="w-full h-48 object-cover">
+          </a>
+        </div>
+        <div class="p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-2">
+            <a href="{% url 'education:lesson_detail' 'snp500' %}" class="hover:text-secondary">📊 S&P500</a>
+          </h2>
+          <p class="text-gray-700 mt-2">Naučite o važnosti S&P500 indeksnih fondova.</p>
+          <a href="{% url 'education:lesson_detail' 'snp500' %}" class="inline-block mt-4 text-primary font-medium hover:underline">Pročitaj više →</a>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md overflow-hidden transition-transform transform hover:scale-105">
+        <div class="bg-green-800">
+          <a href="{% url 'education:lesson_detail' 'tradeoasis' %}">
+            <img src="/media/logo.png" alt="TradeOasis" class="w-full h-48 object-contain">
+          </a>
+        </div>
+        <div class="p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-2">
+            <a href="{% url 'education:lesson_detail' 'tradeoasis' %}" class="hover:text-secondary">Kako ulagati u TradeOasisu?</a>
+          </h2>
+          <p class="text-gray-700 mt-2">Pogledajte naš video vodič!</p>
+          <a href="{% url 'education:lesson_detail' 'tradeoasis' %}" class="inline-block mt-4 text-primary font-medium hover:underline">Pročitaj više →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Lessons Section -->
+    <h2 class="text-2xl font-semibold text-center text-green-700 mb-6">📚 Sve Lekcije</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for lesson in lessons %}
+        <div class="bg-white rounded-xl shadow-md overflow-hidden transition-transform transform hover:scale-105">
+          <div>
+            <a href="{% url 'education:lesson_detail' lesson.slug %}">
+              <img src="{{ lesson.thumbnail.url }}" alt="{{ lesson.title }}" class="w-full h-48 object-cover">
+            </a>
+          </div>
+          <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">
+              <a href="{% url 'education:lesson_detail' lesson.slug %}" class="hover:text-secondary">{{ lesson.title }}</a>
+            </h2>
+            <p class="text-gray-600 text-sm">Napisano: {{ lesson.created_at }}</p>
+            <p class="text-gray-700 mt-2">{{ lesson.snippet }}</p>
+            <a href="{% url 'education:lesson_detail' lesson.slug %}" class="inline-block mt-4 text-primary font-medium hover:underline">Pročitaj više →</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="container mx-auto px-4 py-5">
+      {% if user.is_authenticated and user.is_superuser %}
+        <a href="/education/create" class="text-white hover:bg-green-600 py-2 px-4 rounded bg-green-800">Kreiraj</a>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

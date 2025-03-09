@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% block styles %}{% endblock %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#16A34A', // Green
+            secondary: '#22C55E', // Lighter Green
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+  <!-- Header Section -->
+  <header class="bg-green-800 text-white py-6 flex justify-between items-center relative">
+    <!-- Logo and Title -->
+    <a href="/">
+      <div class="ml-4 flex items-center space-x-4">
+        <img src="{% static 'mini_logo.png' %}" alt="TradeOasis Logo" class="h-12 w-auto">
+        <p href="/" class="text-4xl font-bold">TradeOasis</p>
+      </div>
+    </a>
+ 
+    <!-- Centered Navigation -->
+    <nav class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 text-lg">
+      <a href="/" class="text-white hover:bg-green-600 py-2 px-4 rounded">Početna</a>
+      {% if user.is_authenticated %}
+        <a href="/portfolio" class="text-white hover:bg-green-600 py-2 px-4 rounded">Portfolio</a>
+      {% endif %}
+      <a href="/stock" class="text-white hover:bg-green-600 py-2 px-4 rounded">Dionice</a>
+      <a href="/interest_calculator" class="text-white hover:bg-green-600 py-2 px-4 rounded">Kamatni Kalkulator</a>
+      <a href="/education" class="text-white hover:bg-green-600 py-2 px-4 rounded">Edukacija</a>
+    </nav>
+ 
+    <!-- User Menu (Right) -->
+    <div class="mr-4">
+      {% if user.is_authenticated %}
+        <div class="flex items-center">
+          <!-- Account Balance Display -->
+          {% if user_balance %}
+          <div class="mr-4 bg-green-700 rounded-md px-3 py-1.5 border border-green-600 flex items-center">
+            <span class="text-sm text-green-100 mr-1.5">Stanje:</span>
+            <span class="font-bold text-white">€{{ user_balance|floatformat:2 }}</span>
+          </div>
+          {% endif %}
+          
+          <!-- User Dropdown -->
+          <div class="relative text-white hover:bg-green-700 py-2 px-4 rounded group">
+            <a href="/accounts" class="text-white text-xl block">{{ user.username }}</a>
+            <ul class="absolute right-0 bg-gray-800 w-36 mt-1 invisible group-hover:visible flex flex-col rounded-lg shadow-lg transition-all duration-300 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 z-10">
+              <li><a href="/portfolio" class="block py-2 px-4 hover:bg-green-700 text-white">Portfolio</a></li>
+              <li><a href="/accinfo" class="block py-2 px-4 hover:bg-green-700 text-white">Upravljaj svojim računom</a></li>
+              <li><a href="/help" class="block py-2 px-4 hover:bg-green-700 text-white">Pomoć</a></li>
+              <li>
+                <form method="POST" action="{% url 'logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="w-full text-left block py-2 px-4 hover:bg-red-600 text-white">Odjava</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        </div>
+      {% else %}
+        <a href="{% url 'login' %}" class="text-white hover:bg-green-700 py-2 px-4 rounded border border-white">Prijava</a>
+        <a href="{% url 'accounts' %}" class="bg-white text-green-800 hover:bg-green-100 py-2 px-6 rounded font-semibold">Započni danas</a>
+      {% endif %}
+    </div>
+  </header>
+ 
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-6">
+    {% block content %}
+    <!-- Dynamic content goes here -->
+    {% endblock %}
+  </main>
+  <!-- Footer -->
+  <footer class="bg-green-800 text-white py-4 mt-8">
+    <div class="container mx-auto text-center">
+      <p>&copy; 2025 TradeOasis. Sva prava pridržana.</p>
+    </div>
+  </footer>
+</body>
+</html>

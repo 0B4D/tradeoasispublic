@@ -1,0 +1,30 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}Dobrodošli u TradeOasis{% endblock %}
+
+{% block content %}
+  <header class="bg-green-800 text-white py-6">
+    <div class="container mx-auto text-center">
+      <h1 class="text-4xl font-bold">Trebate pomoć?</h1>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-12">
+    <div class="bg-white shadow-lg rounded-lg p-8 text-center">
+      <h2 class="text-2xl font-bold text-green-800 mb-4">Obratite nam se</h2>
+        <p class="text-gray-700 leading-relaxed mb-4">
+            Ukoliko imate bilo kakvih pitanja ili problema, slobodno nas kontaktirajte putem e-maila ili telefona.
+        </p>
+        <p class="text-gray-700 leading-relaxed mb-4">
+          TradeOasis: <a href="mailto:tradeoasis.info@gmail.com" class="text-green-800 hover:underline">tradeoasis.info@gmail.com</a>
+        </p>
+        <p class="text-gray-700 leading-relaxed mb-4">
+            Jagor Obad: <a href="mailto:jagor.obad@gmail.com" class="text-green-800 hover:underline">jagor.obad@gmail.com</a>
+        </p>
+        <p class="text-gray-700 leading-relaxed mb-4">
+            Matej Toth: <a href="mailto:matej.toth021@gmail.com" class="text-green-800 hover:underline">matej.toth021@gmail.com</a>
+        </p>
+    </div>
+  </div>
+{% endblock %}

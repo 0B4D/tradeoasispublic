@@ -1,0 +1,278 @@
+{% extends 'base_layout.html' %}
+
+{% block styles %}
+<style>
+    .hidden {
+        display: none;
+    }
+    .transition-transform {
+        transition: transform 0.3s ease-in-out;
+    }
+    .rotate-180 {
+        transform: rotate(180deg);
+    }
+    .period-selector button {
+        transition: all 0.2s;
+    }
+    .period-selector button.active {
+        background-color: #10B981;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Detalji dionice - {{ ticker }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold text-green-400 mb-4">{{ name }} ({{ ticker }})</h1>
+    
+    <!-- Stock Information -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Trenutačna cijena</h2>
+            <p class="text-green-400 text-2xl">€{{ current_price|floatformat:6 }}</p>
+        </div>
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Sektor</h2>
+            <p class="text-green-400 text-2xl">{{ sector }}</p>
+        </div>
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">P/E omjer</h2>
+            <p class="text-green-400 text-2xl">{{ pe_ratio }}</p>
+        </div>
+    </div>
+
+    <!-- Total Invested and Total Value in Separate Boxes -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Ukupno investirano</h2>
+            <p class="text-green-400 text-2xl">€{{ total_invested|floatformat:6 }}</p>
+        </div>
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Ukupna vrijednost u portfoliu</h2>
+            <p class="text-green-400 text-2xl">€{{ total_value|floatformat:6 }}</p>
+        </div>
+    </div>
+
+    <!-- Investing and Selling Forms -->
+    <div class="mt-6 p-4 bg-gray-700 rounded-lg">
+        <h2 class="text-xl font-semibold">Uloži ili prodaj {{ name }}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Investing Form -->
+            <form method="POST" class="mt-4">
+                {% csrf_token %}
+                <label for="investment_amount" class="block text-sm font-medium text-white">
+                    Vrijednost uloga (€):
+                </label>
+                <input type="number" name="investment_amount" id="investment_amount" min="0.000001" step="0.000001"
+                    class="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600"
+                    required>
+                <button type="submit" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                    Uloži
+                </button>
+            </form>
+
+            <!-- Selling Form -->
+            <div class="mt-4">
+                <form method="POST" id="sellForm">
+                    {% csrf_token %}
+                    <label for="sell_amount_eur" class="block text-sm font-medium text-white">
+                        Vrijednost prodaje (€):
+                    </label>
+                    <input type="number" name="sell_amount_eur" id="sell_amount_eur" min="0.000001" step="0.000001"
+                        class="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600">
+                    <div class="mt-4 flex space-x-4">
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                            Prodaj
+                        </button>
+                        <button type="button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onclick="sellAll()">
+                            Prodaj sve
+                        </button>
+                    </div>
+                    <input type="hidden" name="sell_all" id="sell_all" value="false">
+                </form>
+            </div>
+        </div>
+        
+        {% if error_message %}
+            <p class="text-red-500 mt-2">{{ error_message }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Stock Chart -->
+    <div class="mt-6">
+        <h2 class="text-xl font-semibold">Povijest cijena dionice</h2>
+        
+        <!-- Period Selector -->
+        <div class="period-selector mt-2 mb-4">
+            <div class="inline-flex rounded-md shadow-sm" role="group">
+                <button type="button" data-period="1d" class="period-btn active px-4 py-2 text-sm font-medium bg-gray-700 text-white border border-gray-600 rounded-l-lg hover:bg-gray-600">
+                    Dan
+                </button>
+                <button type="button" data-period="5d" class="period-btn px-4 py-2 text-sm font-medium bg-gray-700 text-white border border-gray-600 hover:bg-gray-600">
+                    5 dana
+                </button>
+                <button type="button" data-period="1mo" class="period-btn px-4 py-2 text-sm font-medium bg-gray-700 text-white border border-gray-600 hover:bg-gray-600">
+                    Mjesec
+                </button>
+                <button type="button" data-period="3mo" class="period-btn px-4 py-2 text-sm font-medium bg-gray-700 text-white border border-gray-600 hover:bg-gray-600">
+                    3 mjeseca
+                </button>
+                <button type="button" data-period="6mo" class="period-btn px-4 py-2 text-sm font-medium bg-gray-700 text-white border border-gray-600 hover:bg-gray-600">
+                    6 mjeseci
+                </button>
+                <button type="button" data-period="1y" class="period-btn px-4 py-2 text-sm font-medium bg-gray-700 text-white border border-gray-600 hover:bg-gray-600">
+                    Godina
+                </button>
+                <button type="button" data-period="2y" class="period-btn px-4 py-2 text-sm font-medium bg-gray-700 text-white border border-gray-600 rounded-r-lg hover:bg-gray-600">
+                    2 godine
+                </button>
+            </div>
+        </div>
+        
+        <canvas id="stockChart" width="800" height="250" class="mt-4"></canvas>
+        <div id="chartLoading" class="text-center py-8 hidden">
+            <p class="text-white">Učitavanje podataka...</p>
+        </div>
+    </div>
+
+    <!-- Short Info -->
+    <div class="mt-6 p-4 bg-gray-700 rounded-lg">
+        <h2 class="text-xl font-semibold cursor-pointer flex items-center" onclick="toggleInfo()">
+            Informacije o tvrtki
+            <svg id="toggleIcon" class="ml-2 w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </h2>
+        <div id="shortInfo" class="mt-4 hidden transition-all duration-300 ease-in-out">
+            <p class="text-gray-300">{{ short_info }}</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+
+<script>
+    let stockChart = null;
+    let currentPeriod = '1d';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set up period buttons
+        const periodButtons = document.querySelectorAll('.period-btn');
+        periodButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                periodButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                // Update chart with new period
+                currentPeriod = this.dataset.period;
+                loadChartData(currentPeriod);
+            });
+        });
+        
+        // Initial chart load
+        loadChartData(currentPeriod);
+    });
+
+    function loadChartData(period) {
+        // Show loading state
+        document.getElementById('chartLoading').classList.remove('hidden');
+        if (stockChart) {
+            stockChart.destroy();
+        }
+        
+        fetch(`/stock/{{ ticker }}/data/?period=${period}`)
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading state
+                document.getElementById('chartLoading').classList.add('hidden');
+                
+                if (data.error) {
+                    alert("Error loading stock data: " + data.error);
+                    return;
+                }
+
+                const ctx = document.getElementById('stockChart').getContext('2d');
+                
+                // Configure time format based on period
+                const timeUnit = period === '1d' ? 'hour' : 
+                                 period === '5d' ? 'hour' : 
+                                 period === '1mo' ? 'day' : 'day';
+                
+                const displayFormats = {
+                    hour: 'HH:mm',
+                    day: 'MMM DD',
+                    week: 'MMM DD',
+                    month: 'MMM YYYY'
+                };
+                
+                stockChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.dates,
+                        datasets: [{
+                            label: "{{ ticker }} Close Prices",
+                            data: data.close_prices,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 1,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { 
+                                type: 'time',
+                                time: {
+                                    unit: timeUnit,
+                                    displayFormats: displayFormats,
+                                    tooltipFormat: period in ['1d', '5d', '1mo'] ? 'MMM DD, YYYY HH:mm' : 'MMM DD, YYYY'
+                                },
+                                title: { 
+                                    display: true, 
+                                    text: 'Date/Time' 
+                                } 
+                            },
+                            y: { 
+                                title: { 
+                                    display: true, 
+                                    text: 'Close Price (€)' 
+                                } 
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `€${parseFloat(context.raw).toFixed(6)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                document.getElementById('chartLoading').classList.add('hidden');
+                alert("Unable to load stock data: " + error.message);
+            });
+    }
+
+    function toggleInfo() {
+        const infoDiv = document.getElementById('shortInfo');
+        const toggleIcon = document.getElementById('toggleIcon');
+        infoDiv.classList.toggle('hidden');
+        toggleIcon.classList.toggle('rotate-180');
+    }
+
+    function sellAll() {
+        document.getElementById('sell_amount_eur').value = '';
+        document.getElementById('sell_all').value = 'true';
+        document.getElementById('sellForm').submit();
+    }
+</script>
+{% endblock %}
