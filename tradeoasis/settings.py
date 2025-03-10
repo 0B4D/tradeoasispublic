@@ -22,15 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'default-insecure-key-for-dev')
+SECRET_KEY = "django-insecure-s#ii-yz7!*94*xh5gh=^0tj^7-va!otrz7s^(e2=+dy8@cqo3m"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = True
 
-
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
-#ALLOWED_HOSTS=["127.0.0.1"]
-
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -51,7 +48,6 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -92,16 +88,12 @@ EMAIL_HOST_USER = 'apikey'
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY') 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')  
 
-SQLITE_PATH = os.environ.get('SQLITE_PATH', os.path.join(BASE_DIR, 'db.sqlite3'))
-#SQLITE_PATH="data/db.sqlite3"
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SQLITE_PATH,
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
 
 #logs
 LOGGING = {
@@ -153,11 +145,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = os.environ.get('STATIC_URL', '/static/')
-STATIC_ROOT = os.environ.get('STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
+STATIC_URL = "/static/"
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
