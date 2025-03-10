@@ -37,6 +37,7 @@ def interest_calculator(request):
 def help(request):
     return render(request, 'help.html')
 
+@login_required
 def portfolio(request):
     user = request.user
 
@@ -69,12 +70,18 @@ def portfolio(request):
         # Add to total portfolio value
         total_value += item.current_value
 
+    # Calculate the percentage delta based on a starting value (e.g., 10,000)
+    starting_value = Decimal("10000.00")
+    portfolio_value = (Decimal(portfolio.cash_balance) + total_value).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
+    percentage_delta = ((portfolio_value - starting_value) / starting_value * 100).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
     context = {
         "user": user,
         "portfolio": portfolio,
         "portfolio_items": portfolio_items,
         "total_value": total_value,
-        "portfolio_value": (Decimal(portfolio.cash_balance) + total_value).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP),
+        "portfolio_value": portfolio_value,
+        "percentage_delta": percentage_delta,
     }
     
     return render(request, "yourprofile.html", context)

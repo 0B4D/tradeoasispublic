@@ -55,21 +55,21 @@
   </div>
   <div class="flex justify-center mt-6 space-x-2 flex-wrap">
     {% if page_obj.has_previous %}
-      <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">Prva</a>
-      <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">←</a>
+      <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 m-1">Prva</a>
+      <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 m-1">←</a>
     {% endif %}
   
     {% for num in page_obj.paginator.page_range %}
       {% if num == page_obj.number %}
-        <span class="px-4 py-2 bg-yellow-500 text-black font-bold rounded-lg">{{ num }}</span>
+        <span class="px-4 py-2 bg-yellow-500 text-black font-bold rounded-lg m-1">{{ num }}</span>
       {% else %}
-        <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-green-700">{{ num }}</a>
+        <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-green-700 m-1">{{ num }}</a>
       {% endif %}
     {% endfor %}
   
     {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">→</a>
-      <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">Zadnja</a>
+      <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 m-1">→</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 m-1">Zadnja</a>
     {% endif %}
   </div>
   

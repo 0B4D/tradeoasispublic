@@ -2,66 +2,79 @@
 {% block title %}Tvoj portfolio{% endblock %}
 {% block content %}
 <div class="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
-    <h2 class="text-3xl font-bold text-green-400 mb-4">Dobrodošli, {{ user.username }}</h2>
-   
-    <div class="mb-6 grid grid-cols-2 md:grid-cols-2 gap-4">
+    <h2 class="text-3xl font-bold text-green-400 mb-4 text-center">Dobrodošli, {{ user.username }}</h2>
+
+    <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-center sm:text-left">
         <div>
             <h3 class="text-xl font-semibold text-white">Raspoloživa sredstva</h3>
             <p class="text-lg text-green-300">€{{ portfolio.cash_balance|floatformat:2 }}</p>
         </div>
     </div>
-   
+
     <div>
         <h3 class="text-xl font-semibold text-white mb-3">Tvoj portfolio</h3>
         {% if portfolio_items %}
-        <table class="w-full border-collapse border border-gray-600">
-            <thead>
-                <tr class="bg-gray-700 text-white">
-                    <th class="border border-gray-600 px-4 py-2">Dionica</th>
-                    <th class="border border-gray-600 px-4 py-2">Udio</th>
-                    <th class="border border-gray-600 px-4 py-2">Kupovna cijena</th>
-                    <th class="border border-gray-600 px-4 py-2">Trenutna cijena</th>
-                    <th class="border border-gray-600 px-4 py-2">Ukupna vrijednost</th>
-                    <th class="border border-gray-600 px-4 py-2">Profit</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in portfolio_items %}
-                <tr class="text-center text-gray-300">
-                    <td class="border border-gray-600 px-4 py-2">
-                        <a href="{% url 'stock_detail' item.ticker %}" class="text-green-400 hover:underline">{{ item.ticker }}</a>
-                    </td>
-                    <td class="border border-gray-600 px-4 py-2">{{ item.quantity|floatformat:6 }}</td>
-                    <td class="border border-gray-600 px-4 py-2">€{{ item.purchase_price|floatformat:6 }}</td>
-                    <td class="border border-gray-600 px-4 py-2">€{{ item.current_price|floatformat:6 }}</td>
-                    <td class="border border-gray-600 px-4 py-2">€{{ item.current_value|floatformat:6 }}</td>
-                    <td class="border border-gray-600 px-4 py-2">
-                        {% if item.profitpercentage > 0 %}
-                            <span class="text-green-300">+{{ item.profitpercentage|floatformat:7 }}%</span>
-                        {% elif item.profitpercentage < 0 %}
-                            <span class="text-red-400">{{ item.profitpercentage|floatformat:7 }}%</span>
-                        {% else %}
-                            <span class="text-white">{{ item.profitpercentage|floatformat:7 }}%</span>
-                        {% endif %}
-                    </td>
-                   
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse border border-gray-600 text-sm sm:text-base">
+                <thead>
+                    <tr class="bg-gray-700 text-white">
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Dionica</th>
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Udio</th>
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Kupovna cijena</th>
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Trenutna cijena</th>
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Ukupna vrijednost</th>
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in portfolio_items %}
+                    <tr class="text-center text-gray-300">
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">
+                            <a href="{% url 'stock_detail' item.ticker %}" class="text-green-400 hover:underline">
+                                {{ item.ticker }}
+                            </a>
+                        </td>
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">{{ item.quantity|floatformat:6 }}</td>
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">€{{ item.purchase_price|floatformat:6 }}</td>
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">€{{ item.current_price|floatformat:6 }}</td>
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">€{{ item.current_value|floatformat:6 }}</td>
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">
+                            {% if item.profitpercentage > 0 %}
+                            <span class="text-green-300">+{{ item.profitpercentage|floatformat:2 }}%</span>
+                            {% elif item.profitpercentage < 0 %}
+                            <span class="text-red-400">{{ item.profitpercentage|floatformat:2 }}%</span>
+                            {% else %}
+                            <span class="text-white">{{ item.profitpercentage|floatformat:2 }}%</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-        <p class="text-gray-400">Trenutno nema dionica u portfoliu.</p>
+        <p class="text-gray-400 text-center sm:text-left">Trenutno nema dionica u portfoliu.</p>
         {% endif %}
     </div>
-   
-    <div class="mt-6 flex justify-between">
+
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-center sm:text-left">
         <div>
             <h3 class="text-xl font-semibold text-white">Ukupna vrijednost dionica</h3>
             <p class="text-2xl text-green-400 font-bold">€{{ total_value|floatformat:2 }}</p>
         </div>
         <div>
             <h3 class="text-xl font-semibold text-white">Ukupna vrijednost portfolia</h3>
-            <p class="text-2xl text-green-400 font-bold">€{{ portfolio_value|floatformat:2 }}</p>
+            <p class="text-2xl font-bold text-green-400">
+                €{{ portfolio_value|floatformat:2 }}
+                {% if percentage_delta > 0 %}
+                <span class="text-green-300 text-lg ml-2">(+{{ percentage_delta|floatformat:2 }}%)</span>
+                {% elif percentage_delta < 0 %}
+                <span class="text-red-400 text-lg ml-2">({{ percentage_delta|floatformat:2 }}%)</span>
+                {% else %}
+                <span class="text-white text-lg ml-2">({{ percentage_delta|floatformat:2 }}%)</span>
+                {% endif %}
+            </p>
         </div>
     </div>
+</div>
 {% endblock %}
