@@ -33,8 +33,14 @@ Da biste instalirali sve potrebne vanjske programe, pokrenite komandu:
 
 pip install -r requirements.txt
 
+Prije pokretanja, važno je migrirati bazu podataka:
+
+python manage.py migrate
+
 Na kraju da biste pokrenuli aplikaciju, pokrenite komandu:
 
 python manage.py runserver
 
 Ako adresu iz terminala pokrenete na svojem web pregledniku, trebali biste vidjeti početnu stranicu TradeOasisa.
+
+Napomena: resetiranje lozinke nije moguće u lokalnoj inačici programa
