@@ -68,7 +68,7 @@
 
     <p class="text-gray-300 leading-relaxed bg-gray-800 p-4 rounded-lg shadow-lg">
         Proučite o <a href="/education/compound-interest" class="text-primary hover:underline"><span class="font-bold text-green-400">složenoj kamati</span></a>
-        i ulaganju u <a href="/education/s&p500" class="text-primary hover:underline"><span class="font-bold text-green-400">S&P500</span></a> indeksnim fondovima.
+        i ulaganju u <a href="/education/snp500" class="text-primary hover:underline"><span class="font-bold text-green-400">S&P500</span></a> indeksnim fondovima.
     </p>
   </div>
 
@@ -88,7 +88,7 @@
   }
 
   .scroller {
-    max-width: 100%; /* Make the scroller take the full width */
+    max-width: 100%; 
   }
 
   .scroller__inner {
@@ -134,7 +134,7 @@
   }
 
   .scroller:hover .scroller__inner {
-    animation-play-state: paused; /* Pause the animation on hover */
+    animation-play-state: paused;
   }
 
   @keyframes scroll {
@@ -155,16 +155,11 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
 function addAnimation() {
   scrollers.forEach((scroller) => {
-    // add data-animated="true" to every `.scroller` on the page
     scroller.setAttribute("data-animated", true);
 
-    // Make an array from the elements within `.scroller-inner`
     const scrollerInner = scroller.querySelector(".scroller__inner");
     const scrollerContent = Array.from(scrollerInner.children);
 
-    // For each item in the array, clone it
-    // add aria-hidden to it
-    // add it into the `.scroller-inner`
     scrollerContent.forEach((item) => {
       const duplicatedItem = item.cloneNode(true);
       duplicatedItem.setAttribute("aria-hidden", true);

@@ -1,0 +1,8 @@
+.venv/
+venv/
+.env
+*.pyc
+__pycache__/
+todo.txt
+*.md
+*.sqlite3

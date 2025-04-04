@@ -35,7 +35,10 @@ urlpatterns = [
     path('help/', views.help, name='help'),
     path('delete-account/', views.delete_account, name='delete_account'),
     path('accinfo/', views.account_info, name='account_info'),
+    path('stock_hr/', include('stock_hr.urls')),
+    path('account/reset-portfolio/', views.reset_portfolio, name='reset_portfolio')
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-urlpatterns += staticfiles_urlpatterns()
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += staticfiles_urlpatterns()

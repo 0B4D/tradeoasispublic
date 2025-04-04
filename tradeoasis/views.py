@@ -5,6 +5,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+import os
 
 def testing(request):
     return render(request, 'test.html')
@@ -59,9 +60,10 @@ def portfolio(request):
 
     # Update stock prices and calculate total portfolio value
     for item in portfolio_items:
-        stock = yf.Ticker(item.ticker)
-        current_price_usd = stock.history(period="1d")['Close'].iloc[-1]
-        current_price_eur = (Decimal(str(current_price_usd)) / exchange_rate).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)  # Convert to EUR
+        if item.market == "HR":
+            current_price_eur = item.get_current_price()
+        else:
+            current_price_eur = item.get_current_price()
 
         # Store updated price and calculate value
         item.current_price = current_price_eur
@@ -125,16 +127,9 @@ def account_info(request):
     # Get portfolio information
     try:
         portfolio = Portfolio.objects.get(user=user)
+        total_portfolio_value = portfolio.get_total_value()
         cash_balance = portfolio.cash_balance
-        
-        # Calculate total portfolio value
-        portfolio_items = portfolio.items.all()
-        total_stocks_value = Decimal("0.0000000")
-        
-        for item in portfolio_items:
-            total_stocks_value += item.get_current_value()
-            
-        total_portfolio_value = (cash_balance + total_stocks_value).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
+        portfolio_items = portfolio.items.all()  # Get all stocks in portfolio
     except Portfolio.DoesNotExist:
         cash_balance = Decimal("0.00")
         total_portfolio_value = Decimal("0.00")
@@ -148,3 +143,24 @@ def account_info(request):
     }
     
     return render(request, 'account_info.html', context)
+
+@login_required
+def reset_portfolio(request):
+    """
+    View for resetting user's portfolio.
+    """
+    if request.method == 'POST':
+        user = request.user
+        try:
+            portfolio = Portfolio.objects.get(user=user)
+            # Delete all portfolio items
+            portfolio.items.all().delete()
+            portfolio.cash_balance = Decimal("10000.00")  
+            portfolio.save()
+            messages.success(request, "Vaš portfolio je uspješno resetiran.")
+        except Portfolio.DoesNotExist:
+            messages.error(request, "Portfolio nije pronađen.")
+        
+        return redirect('account_info')
+    
+    return redirect('account_info')

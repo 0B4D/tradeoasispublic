@@ -6,6 +6,7 @@ from .forms import LessonForm
 
 def education(request):
     lessons = Lesson.objects.all()
+    print(lessons[0].thumbnail.url)
     return render(request, 'education.html', {'lessons': lessons})
 
 def compound_interest(request):

@@ -1,0 +1,22 @@
+{% extends "base_layout.html" %}
+{% block title %}Status aktivacije računa | TradeOasis{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+  <div class="bg-green-700 py-4 px-6">
+    <h2 class="text-2xl font-bold text-white">Status aktivacije</h2>
+  </div>
+  <div class="p-6">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="mb-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-800 text-white{% elif message.tags == 'error' %}bg-red-900 text-white{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <div class="mt-4 text-center">
+      <a href="{% url 'login' %}" class="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-green-500">Natrag na prijavu</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

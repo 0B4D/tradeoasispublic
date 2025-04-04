@@ -51,6 +51,17 @@
     <div class="mt-8 pt-6 border-t border-gray-600">
         <h3 class="text-xl font-semibold text-white mb-4">Upravljanje računom</h3>
         
+        <!-- Reset Portfolio -->
+        <div class="flex justify-between items-center p-4 bg-gray-700 rounded-lg mb-4">
+            <div>
+                <p class="text-white font-medium">Resetiraj portfolio</p>
+                <p class="text-gray-400 text-sm">Ova radnja će izbrisati sve dionice iz vašeg portfolia i vratiti početna sredstva.</p>
+            </div>
+            <button id="resetPortfolioBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                Resetiraj portfolio
+            </button>
+        </div>
+        
         <!-- Delete Account -->
         <div class="flex justify-between items-center p-4 bg-gray-700 rounded-lg">
             <div>
@@ -63,7 +74,26 @@
         </div>
     </div>
     
-    <!-- Confirmation Modal -->
+    <!-- Reset Portfolio Confirmation Modal -->
+    <div id="resetConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 class="text-xl font-bold text-white mb-4">Potvrda resetiranja portfolia</h3>
+            <p class="text-gray-300 mb-6">Jeste li sigurni da želite resetirati svoj portfolio? Sve vaše dionice bit će prodane i sredstva vraćena na početnu vrijednost.</p>
+            <div class="flex justify-between">
+                <button id="cancelResetBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Odustani
+                </button>
+                <form method="POST" action="{% url 'reset_portfolio' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                        Potvrdi resetiranje
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Account Confirmation Modal -->
     <div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
             <h3 class="text-xl font-bold text-white mb-4">Potvrda brisanja računa</h3>
@@ -86,21 +116,42 @@
         // JavaScript for modal functionality
         document.addEventListener('DOMContentLoaded', function() {
             const deleteBtn = document.getElementById('deleteAccountBtn');
-            const modal = document.getElementById('deleteConfirmModal');
-            const cancelBtn = document.getElementById('cancelDeleteBtn');
+            const deleteModal = document.getElementById('deleteConfirmModal');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 
+            const resetBtn = document.getElementById('resetPortfolioBtn');
+            const resetModal = document.getElementById('resetConfirmModal');
+            const cancelResetBtn = document.getElementById('cancelResetBtn');
+
+            // Delete account modal
             deleteBtn.addEventListener('click', function() {
-                modal.classList.remove('hidden');
+                deleteModal.classList.remove('hidden');
             });
 
-            cancelBtn.addEventListener('click', function() {
-                modal.classList.add('hidden');
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteModal.classList.add('hidden');
             });
 
-            // Close modal when clicking outside
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.add('hidden');
+            // Close delete modal when clicking outside
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    deleteModal.classList.add('hidden');
+                }
+            });
+            
+            // Reset portfolio modal
+            resetBtn.addEventListener('click', function() {
+                resetModal.classList.remove('hidden');
+            });
+
+            cancelResetBtn.addEventListener('click', function() {
+                resetModal.classList.add('hidden');
+            });
+
+            // Close reset modal when clicking outside
+            resetModal.addEventListener('click', function(e) {
+                if (e.target === resetModal) {
+                    resetModal.classList.add('hidden');
                 }
             });
         });

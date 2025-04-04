@@ -51,7 +51,7 @@ def stock_detail(request, ticker):
         
         name = info.get("shortName", ticker)
         pe_ratio = info.get("trailingPE")
-        sector = translate_to_croatian(info.get("sector", "sektor nesostupan"))
+        sector = translate_to_croatian(info.get("sector", "sektor nedostupan"))
         short_info = translate_to_croatian(info.get("longBusinessSummary", "opis nedostupan"))
         
         # Get stock price in USD
@@ -67,7 +67,7 @@ def stock_detail(request, ticker):
         # Calculate total amount invested in the specific stock
         portfolio = Portfolio.objects.get(user=request.user)
         try:
-            portfolio_item = PortfolioItem.objects.get(portfolio=portfolio, ticker=ticker)
+            portfolio_item = PortfolioItem.objects.get(portfolio=portfolio, market="F", ticker=ticker)
             total_invested = (portfolio_item.quantity * portfolio_item.purchase_price).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
             total_value = (portfolio_item.quantity * current_price_eur).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
         except PortfolioItem.DoesNotExist:
@@ -76,13 +76,13 @@ def stock_detail(request, ticker):
             total_value = Decimal("0.0000000")
 
         # Handle investment form submission
-        if request.method == "POST":
+        if request.method == "POST" and current_price_eur is not None:
             investment_amount = request.POST.get('investment_amount')
             sell_amount_eur = request.POST.get('sell_amount_eur')
             sell_all = request.POST.get('sell_all')
 
             try:
-                portfolio, created = Portfolio.objects.get_or_create(user=request.user)
+                portfolio, _ = Portfolio.objects.get_or_create(user=request.user)
 
                 if investment_amount:
                     investment_amount = Decimal(investment_amount).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
@@ -111,12 +111,14 @@ def stock_detail(request, ticker):
                         portfolio_item.purchase_price = weighted_average_price.quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
                         portfolio_item.save()
                     else:
-                        # Add new stock to portfolio
+                        # Add new portfolio item
                         PortfolioItem.objects.create(
                             portfolio=portfolio,
                             ticker=ticker,
                             quantity=quantity,
-                            purchase_price=current_price_eur
+                            purchase_price=current_price_eur,
+                            market="F",  # Foreign market
+                            type="stock",  # Add asset type
                         )
 
                 elif sell_amount_eur:
@@ -126,16 +128,16 @@ def stock_detail(request, ticker):
 
                     # Find the portfolio item
                     try:
-                        portfolio_item = PortfolioItem.objects.get(portfolio=portfolio, ticker=ticker)
+                        portfolio_item = PortfolioItem.objects.get(portfolio=portfolio, market="F", ticker=ticker)
                     except:
-                        raise ValueError("Nedovoljno dionica za prodaju.")
+                        raise ValueError("Ne posjedujete ovu dionicu.")
 
                     # Calculate the number of shares to sell
                     sell_quantity = (sell_amount_eur / current_price_eur).quantize(Decimal("0.000000001"), rounding=ROUND_HALF_UP)
 
                     # Check if the user has enough shares to sell
                     if sell_quantity > portfolio_item.quantity:
-                        raise ValueError("Nedovoljno dionica za prodaju.")
+                        raise ValueError("Nemate dovoljno dionica za prodaju.")
 
                     # Calculate the amount to be credited to cash balance
                     sell_value = (sell_quantity * current_price_eur).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
@@ -153,17 +155,19 @@ def stock_detail(request, ticker):
 
                 elif sell_all:
                     # Find the portfolio item
-                    portfolio_item = PortfolioItem.objects.get(portfolio=portfolio, ticker=ticker)
+                    portfolio_item = PortfolioItem.objects.get(portfolio=portfolio, market="F", ticker=ticker)
+                    if portfolio_item:
+                        # Calculate the amount to be credited to cash balance
+                        sell_value = (portfolio_item.quantity * current_price_eur).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
 
-                    # Calculate the amount to be credited to cash balance
-                    sell_value = (portfolio_item.quantity * current_price_eur).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
+                        # Delete the portfolio item
+                        portfolio_item.delete()
 
-                    # Delete the portfolio item
-                    portfolio_item.delete()
-
-                    # Credit the sell value to cash balance
-                    portfolio.cash_balance += sell_value
-                    portfolio.save()
+                        # Credit the sell value to cash balance
+                        portfolio.cash_balance += sell_value
+                        portfolio.save()
+                    else:
+                        raise ValueError("Ne posjedujete ovu dionicu.")     
 
                 return redirect('stock_detail', ticker=ticker)
 

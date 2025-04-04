@@ -1,7 +1,7 @@
 {% extends "base_layout.html" %}
 {% block title %}Tvoj portfolio{% endblock %}
 {% block content %}
-<div class="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
+<div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
     <h2 class="text-3xl font-bold text-green-400 mb-4 text-center">Dobrodošli, {{ user.username }}</h2>
 
     <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-center sm:text-left">
@@ -19,7 +19,9 @@
                 <thead>
                     <tr class="bg-gray-700 text-white">
                         <th class="border border-gray-600 px-2 py-2 sm:px-4">Dionica</th>
-                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Udio</th>
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Tip</th>
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Tržište</th>
+                        <th class="border border-gray-600 px-2 py-2 sm:px-4">Broj dionica</th>
                         <th class="border border-gray-600 px-2 py-2 sm:px-4">Kupovna cijena</th>
                         <th class="border border-gray-600 px-2 py-2 sm:px-4">Trenutna cijena</th>
                         <th class="border border-gray-600 px-2 py-2 sm:px-4">Ukupna vrijednost</th>
@@ -30,10 +32,26 @@
                     {% for item in portfolio_items %}
                     <tr class="text-center text-gray-300">
                         <td class="border border-gray-600 px-2 py-2 sm:px-4">
+                            {% if item.market == 'F' %}
                             <a href="{% url 'stock_detail' item.ticker %}" class="text-green-400 hover:underline">
                                 {{ item.ticker }}
                             </a>
+                            {% elif item.market == 'HR' %}
+                            <a href="{% url 'stock_hr:asset_detail_hr' item.type item.ticker %}" class="text-green-400 hover:underline">
+                                {{ item.ticker }}
+                            </a>
+                            {% endif %}
                         </td>
+                        {% if item.type == 'stock' %}
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">Dionica</td>
+                        {% elif item.type == 'index' %}
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">Indeks</td>
+                        {% endif %}
+                        {% if item.market == 'F' %}
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">Strano</td>
+                        {% elif item.market == 'HR' %}
+                        <td class="border border-gray-600 px-2 py-2 sm:px-4">Hrvatsko</td>
+                        {% endif %}
                         <td class="border border-gray-600 px-2 py-2 sm:px-4">{{ item.quantity|floatformat:6 }}</td>
                         <td class="border border-gray-600 px-2 py-2 sm:px-4">€{{ item.purchase_price|floatformat:6 }}</td>
                         <td class="border border-gray-600 px-2 py-2 sm:px-4">€{{ item.current_price|floatformat:6 }}</td>

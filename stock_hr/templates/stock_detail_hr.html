@@ -1,0 +1,176 @@
+{% extends 'base_layout.html' %}
+
+{% block styles %}
+<style>
+    .hidden { display: none; }
+    .transition-transform { transition: transform 0.3s ease-in-out; }
+    .rotate-180 { transform: rotate(180deg); }
+    .period-selector button { transition: all 0.2s; }
+    .period-selector button.active { background-color: #10B981; color: white; }
+</style>
+{% endblock %}
+
+{% block title %}Detalji dionice - {{ asset.name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold text-green-400 mb-4"> {{ asset.name }} </h1>
+    
+    <!-- Stock Information -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Trenutačna cijena</h2>
+            {% if asset.price %}
+            <p class="text-green-400 text-2xl">€{{ asset.price|floatformat:4 }}</p>
+            {% else %}
+            <p class="text-red-400 text-2xl">Nema cijene</p>
+            {% endif %}
+        </div>
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Promjena</h2>
+            {% if asset.change > 0 %}
+            <p class="text-green-400 text-2xl"> +{{ asset.change|floatformat:2 }}%</p>
+            {% elif asset.change < 0 %}
+            <p class="text-red-400 text-2xl"> {{ asset.change|floatformat:2 }}%</p>
+            {% else %}
+            <p class="text-white text-2xl"> {{ asset.change }}%</p>
+            {% endif %} 
+        </div>
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Broj dionica u portfoliu</h2>
+            {% if portfolio_item.quantity %}
+            <p class="text-green-400 text-2xl">{{ portfolio_item.quantity|floatformat:2 }}</p>
+            {% else %}
+            <p class="text-green-400 text-2xl">0</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Investment Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Ukupno investirano</h2>
+            {% if portfolio_item %}
+            <p class="text-green-400 text-2xl">€{{ total_invested|floatformat:2 }}</p>
+            {% else %}
+            <p class="text-green-400 text-2xl">€0.00</p>
+            {% endif %}
+        </div>
+        <div class="p-4 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold">Ukupna vrijednost u portfoliu</h2>
+            {% if portfolio_item %}
+            <p class="text-green-400 text-2xl">€{{ total_value|floatformat:2 }}</p>
+            {% else %}
+            <p class="text-green-400 text-2xl">€0.00</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Investing and Selling Forms -->
+    <div class="mt-6 p-4 bg-gray-700 rounded-lg">
+        <h2 class="text-xl font-semibold flex items-center space-x-2">
+            <span>Uloži ili prodaj {{ name }}</span>
+            <div class="relative group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <title>Info</title>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                </svg>
+                <div class="absolute z-10 hidden group-hover:block bg-gray-900 text-sm text-gray-200 rounded p-2 w-64 top-6 left-1/2 transform -translate-x-1/2 shadow-lg">
+                    Na Zagrebačkoj burzi moguće je kupiti ili prodati samo cjelobrojnu količinu dionica.
+                </div>
+            </div>
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Investing Form -->
+            <form method="POST" class="mt-4">
+                {% csrf_token %}
+                <label for="investment_quantity" class="block text-sm font-medium text-white">
+                    Broj dionica za ulaganje:
+                </label>
+                <input type="number" name="investment_quantity" id="investment_quantity" min="1" step="1"
+                    class="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600"
+                    required>
+                <button type="submit" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                    Uloži
+                </button>
+            </form>
+
+            <!-- Selling Form -->
+            <div class="mt-4">
+                <form method="POST" id="sellForm">
+                    {% csrf_token %}
+                    <label for="sell_quantity" class="block text-sm font-medium text-white">
+                        Broj dionica za prodaju:
+                    </label>
+                    <input type="number" name="sell_quantity" id="sell_quantity" min="1" step="1"
+                        class="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600">
+                    <div class="mt-4 flex space-x-4">
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                            Prodaj
+                        </button>
+                        <button type="button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onclick="sellAll()">
+                            Prodaj sve
+                        </button>
+                    </div>
+                    <input type="hidden" name="sell_all" id="sell_all" value="false">
+                </form>
+            </div>
+        </div>
+        
+        {% if error_message %}
+            <p class="text-red-500 mt-2">{{ error_message }}</p>
+        {% endif %}
+    </div>
+    <div>
+        <!-- Message -->
+        {% if message %}
+        <p class="text-green-400 text-2xl">{{ message }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Short Info -->
+    <div class="mt-6 p-4 bg-gray-700 rounded-lg">
+        <h2 class="text-xl font-semibold cursor-pointer flex items-center" onclick="toggleInfo()">
+            Informacije o {{ asset.name }}
+            <svg id="toggleIcon" class="ml-2 w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </h2>
+        <div id="shortInfo" class="mt-4 hidden transition-all duration-300 ease-in-out">
+            <p class="text-gray-300">{{ short_info }}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleInfo() {
+        const infoDiv = document.getElementById('shortInfo');
+        const toggleIcon = document.getElementById('toggleIcon');
+        infoDiv.classList.toggle('hidden');
+        toggleIcon.classList.toggle('rotate-180');
+    }
+
+    function sellAll() {
+        document.getElementById('sell_quantity').value = ''; // Clear the sell quantity field
+        document.getElementById('sell_all').value = 'true'; // Set sell_all to true
+        document.getElementById('sellForm').submit(); // Submit the form
+    }
+    const input = document.getElementById('investment_quantity');
+    input.addEventListener('input', () => {
+        if (!Number.isInteger(Number(input.value))) {
+            input.setCustomValidity('Unesite cijeli broj.');
+        } else {
+            input.setCustomValidity('');
+        }
+    });
+    const sellInput = document.getElementById('sell_quantity');
+    sellInput.addEventListener('input', () => {
+        if (!Number.isInteger(Number(sellInput.value))) {
+            sellInput.setCustomValidity('Unesite cijeli broj.');
+        } else {
+            sellInput.setCustomValidity('');
+        }
+    });
+</script>
+{% endblock %}

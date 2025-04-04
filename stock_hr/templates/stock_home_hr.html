@@ -1,0 +1,110 @@
+{% extends "base_layout.html" %}
+{% block title %}Dionice - ZSE{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-6 py-10 bg-gray-900 text-white rounded-lg shadow-lg">
+  <h2 class="text-3xl font-bold text-green-400 text-center mb-6">📈 Hrvatske Dionice</h2>
+ 
+  <!-- Display messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="{% if message.tags == 'error' %}bg-red-700{% else %}bg-green-700{% endif %} text-white p-4 mb-6 rounded-lg">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+    <p class="text-gray-300 leading-relaxed bg-gray-800 p-4 rounded-lg shadow-lg mb-5">
+        Za više informacija o hrvatskim dionicama pogledajte <a href="https://www.zse.hr/" target="_blank" class="text-green-400 hover:underline">Zagrebačku burzu</a>.
+    </p>
+    
+    <!-- Search Bar -->
+    <div class="mb-6">
+      <div class="relative">
+        <input type="text" id="stockSearch" placeholder="Pretraži dionice..." class="w-full px-4 py-3 bg-gray-800 text-white rounded-lg border border-green-500 focus:outline-none focus:ring-2 focus:ring-green-400">
+        <button class="absolute right-3 top-3 text-green-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Stock Table -->
+    <div class="overflow-hidden rounded-lg shadow-lg">
+      <table class="w-full border border-green-500 text-white">
+        <thead>
+          <tr class="bg-green-700 text-lg text-center">
+            <th class="p-4 border-b border-green-500">Dionica</th>
+            <th class="p-4 border-b border-green-500">Tražena cijena</th>
+            <th class="p-4 border-b border-green-500">Ponuđena cijena</th>
+            <th class="p-4 border-b border-green-500">Zadnja cijena</th>
+            <th class="p-4 border-b border-green-500">Promjena (%)</th>
+          </tr>
+        </thead>
+        <tbody id="stock-table">
+          {% for stock in stocks %}
+            <tr class="hover:bg-green-600 transition duration-200 text-center cursor-pointer stock-row" data-href="{{ stock.name }}">
+              <td class="p-4 border-b border-green-500 font-semibold">
+                <span class="text-green-400 hover:text-yellow-400 font-semibold">{{ stock.name }}</span>
+              </td>
+              <td class="p-4 border-b border-green-500">{{ stock.bid_price }}</td>
+              <td class="p-4 border-b border-green-500">{{ stock.offer_price }}</td>
+              <td class="p-4 border-b border-green-500">{{ stock.last_price }}</td>
+              <td class="p-4 border-b border-green-500 {% if stock.change_percent < 0 %}text-red-400{% else %}text-green-300{% endif %}">
+                {% if stock.change_percent > 0 %}
+                  +{{ stock.change_percent }}%
+                {% else %}
+                  {{ stock.change_percent }}%
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr id="no-results-row" class="hidden">
+              <td colspan="5" class="text-gray-400 text-center py-4">Nema rezultata pretrage</td>
+            </tr>
+            <tr id="no-data-row">
+              <td colspan="5" class="text-gray-400 text-center py-4">Nema podataka</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
+<script>
+// Make entire row clickable
+  document.querySelectorAll('#stock-table tr.stock-row').forEach(row => {
+    row.addEventListener('click', function() {
+      window.location.href = this.dataset.href;
+    });
+  });
+
+  // Search functionality
+  document.getElementById('stockSearch').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#stock-table tr.stock-row');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+      const stockName = row.querySelector('span').textContent.toLowerCase().trim();
+      if (stockName.includes(searchTerm)) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+    
+    // Show "no results" message if needed
+    const noResultsRow = document.getElementById('no-results-row');
+    const noDataRow = document.getElementById('no-data-row');
+    
+    if (rows.length > 0) {
+      noDataRow.style.display = 'none';
+      if (visibleCount === 0) {
+        noResultsRow.style.display = '';
+      } else {
+        noResultsRow.style.display = 'none';
+      }
+    }
+  });
+</script>
+{% endblock %}

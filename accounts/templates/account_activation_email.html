@@ -1,0 +1,14 @@
+{% autoescape off %}
+Poštovani {{ user.username }},
+
+Hvala na registraciji na TradeOasis.
+
+Molimo kliknite na sljedeći link za potvrdu vaše registracije:
+
+http://{{ domain }}/accounts/activate/{{ uid }}/{{ token }}/
+
+Ako niste registrirali ovaj račun, možete zanemariti ovu e-poštu.
+
+Srdačan pozdrav,
+TradeOasis Tim
+{% endautoescape %}

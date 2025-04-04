@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +41,17 @@
       {% if user.is_authenticated %}
         <a href="/portfolio" class="hover:bg-green-600 py-2 px-4 rounded">Portfolio</a>
       {% endif %}
-      <a href="/stock" class="hover:bg-green-600 py-2 px-4 rounded">Dionice</a>
+      
+      <!-- Dropdown za Dionice -->
+      <div class="relative hover:bg-green-600 py-2 px-4 rounded group">
+        <a class="text-white block">Dionice ↓</a>
+        <ul class="absolute left-0 bg-gray-800 w-48 mt-1 invisible group-hover:visible flex flex-col rounded-lg shadow-lg transition-all duration-300 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 z-20">
+          <li><a href="/stock" class="block py-2 px-4 hover:bg-green-700 text-white">Strane dionice</a></li>
+          <li><a href="/stock_hr/stock" class="block py-2 px-4 hover:bg-green-700 text-white">Hrvatske dionice</a></li>
+          <li><a href="/stock_hr/index" class="block py-2 px-4 hover:bg-green-700 text-white">Hrvatski indeksi</a></li>
+        </ul>
+      </div>
+
       <a href="/interest_calculator" class="hover:bg-green-600 py-2 px-4 rounded">Kamatni Kalkulator</a>
       <a href="/education" class="hover:bg-green-600 py-2 px-4 rounded">Edukacija</a>
     </nav>

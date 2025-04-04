@@ -7,6 +7,7 @@ from .views import (
     CustomPasswordResetCompleteView,
 )
 
+
 urlpatterns = [
     path('', views.accounts, name='accounts'),
     path('register/', views.register, name='register'),
@@ -26,4 +27,7 @@ urlpatterns = [
     path('password-reset-complete/', 
          CustomPasswordResetCompleteView.as_view(), 
          name='password_reset_complete'),
+    
+    #register email confirm urls
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 ]
